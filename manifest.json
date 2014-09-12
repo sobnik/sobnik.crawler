@@ -2,13 +2,13 @@
     "manifest_version": 2,
 
     "name": "Sobnik Crawler",
-    "description": "Sobnik Crawler",
-    "version": "1.0",
+    "description": "Сканер объявлений для Sobnik",
+    "version": "1.1",
 
     "permissions": [
-	"http://localhost:8081/*",
-	"http://*/*",
-	"https://*/*",
+	"http://sobnik.com/*",
+	"http://www.avito.ru/*",
+	"https://www.avito.ru/*",
 	"tabs"
     ],
 

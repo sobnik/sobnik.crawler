@@ -8,6 +8,13 @@
 	urls: [
 	    "http://www.avito.ru/[^/]+/kvartiry/sdam/na_dlitelnyy_srok"
 	],
+
+	url2id: function (url) {
+	    var id = url.match (/\d+$/);
+	    if (!id)
+		return "";
+	    return "avito:"+id;
+	},
     }
 
     sob.start (board);

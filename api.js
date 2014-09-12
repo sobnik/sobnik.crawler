@@ -2,7 +2,10 @@
 function sobnikApi () 
 {
 
-    var api_url = "http://localhost:8081/api/";
+    var api_url = "http://sobnik.com/api/";
+    var crossDomain = false;
+//    var api_url = "http://localhost:8081/api/";
+//    var crossDomain = true;
 
     var call = function (method, type, data, callback, statbacks, errback)
     {
@@ -10,6 +13,7 @@ function sobnikApi ()
 	    url: api_url + method,
 	    type: type,
 	    data: JSON.stringify (data),
+	    crossDomain: crossDomain,
 	    success: callback,
 	    statusCode: statbacks,
 	    error: function (xhr, status, error) {
@@ -29,10 +33,8 @@ function sobnikApi ()
 	return to;
     }
 
-    var open = function (ads)
+    var open = function (board, ads)
     {
-	var hostname = location.hostname;
-
 	var next = function ()
 	{
 	    if (ads.length == 0)
@@ -45,8 +47,12 @@ function sobnikApi ()
 	    var ad_index = Math.floor (Math.random () * ads.length);
 	    var ad = ads[ad_index];
 	    ads.splice (ad_index, 1);
-	    var url = "http://" + hostname + ad;
-	    console.log (url);
+	    var url = ad;
+	    if (ad.indexOf (location.hostname) < 0)
+		url = location.origin + ad;
+	    var id = board.url2id (url);
+	    console.assert (id, "Bad ad id "+url)
+	    console.log (id + " " + url);
 
 	    var delayNext = function () {
 		// FIXME make distribution more stochastic
@@ -59,8 +65,8 @@ function sobnikApi ()
 		later (delay, next);
 	    };
 
-	    var urls = {Urls: [url]};
-	    call ("sobnik", "POST", urls, function (data) {
+	    var ids = {AdIds: [id]};
+	    call ("sobnik", "POST", ids, function (data) {
 		console.log (data);
 		// FIXME check date
 		if (data.length == 0)
@@ -77,6 +83,7 @@ function sobnikApi ()
 	    }, /* statbacks= */null, function () {
 		// go to next on error
 		console.log ("error");
+		// FIXME add delay here too to lower the load on sobnik
 		next ();
 	    });
 	};
@@ -107,7 +114,7 @@ function sobnikApi ()
 	var scan = function () 
 	{
 	    var ads = gather (board.selector, board.pattern);
-	    open (ads);
+	    open (board, ads);
 	}
 
 	later ((Math.random () * 10 + 1) * 1000, function () {
