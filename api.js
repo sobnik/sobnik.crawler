@@ -65,27 +65,48 @@ function sobnikApi ()
 		later (delay, next);
 	    };
 
-	    var ids = {AdIds: [id]};
-	    call ("sobnik", "POST", ids, function (data) {
-		console.log (data);
-		// FIXME check date
-		if (data.length == 0)
-		{
-		    console.log ("expired");
-		    chrome.runtime.sendMessage ("", {type: "open", url: url});
-		    delayNext ();
-		}
-		else
-		{
-		    console.log ("exists");
-		    next ();
-		}
-	    }, /* statbacks= */null, function () {
+	    var errback = function ()
+	    {
 		// go to next on error
 		console.log ("error");
 		// FIXME add delay here too to lower the load on sobnik
 		next ();
-	    });
+	    }
+
+	    var ids = {AdIds: [id], Async: true};
+	    call ("sobnik", "POST", ids, function (data) {
+		console.log (data);
+		var success = function (data)
+		{
+		    // FIXME check date
+		    if (data.length == 0)
+		    {
+			console.log ("expired");
+			chrome.runtime.sendMessage ("", {type: "open", url: url});
+			delayNext ();
+		    }
+		    else
+		    {
+			console.log ("exists");
+			next ();
+		    }
+		}
+
+		var retry = function ()
+		{
+		    var req = {TaskId: data.Id};
+		    later (1000, function () {
+			call ("result", "POST", req, /* callback= */null, {
+			    200: success,
+			    204: retry,
+			    400: errback,
+			}, retry);
+		    });
+		}
+
+		retry ();
+
+	    }, /* statbacks= */null, errback);
 	};
 
 	next ();
