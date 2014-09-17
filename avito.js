@@ -6,7 +6,7 @@
 	selector: "div.b-catalog-list div.item h3 a", 
 	pattern: ".*kvartiry.*",
 	urls: [
-	    "http://www.avito.ru/[^/]+/kvartiry"
+	    "http://www.avito.ru/[^/]+/kvartiry.*view\\=list"
 	],
 
 	url2id: function (url) {

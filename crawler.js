@@ -11,8 +11,8 @@
     var opened = {};
 
     var urls = [
-//	"http://www.avito.ru/moskva/kvartiry?user=1&view=list",
-	"http://www.avito.ru/moskva/kvartiry/sdam/na_dlitelnyy_srok?user=1&view=list"
+	"http://www.avito.ru/moskva/kvartiry?user=1&view=list",
+//	"http://www.avito.ru/moskva/kvartiry/sdam/na_dlitelnyy_srok?user=1&view=list"
     ];
 
     var incognito = function (callback) 

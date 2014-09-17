@@ -127,6 +127,8 @@ function sobnikApi ()
 	var result = [];
 	for (var url in map)
 	    result.push(url);
+	console.log ("Gathered");
+	console.log (result);
 	return result;
     }
 
