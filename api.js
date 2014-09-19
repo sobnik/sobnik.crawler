@@ -35,9 +35,11 @@ function sobnikApi ()
 
     var open = function (board, ads)
     {
+	var opened = 0;
+	var processed = 0;
 	var next = function ()
 	{
-	    if (ads.length == 0)
+	    if (processed > 10 || ads.length == 0)
 	    {
 		console.log("done");
 		chrome.runtime.sendMessage ("", {type: "done"});
@@ -59,7 +61,10 @@ function sobnikApi ()
 		var delays = [10, 40, 50];
 		var dr = Math.floor (Math.random () * delays.length);
 		var delay = (Math.random () * delays[dr] + 10) * 1000;
-		console.log (delays[dr]);
+//		var delay = (Math.random () * 2 + 2) * 1000;
+		if (opened > 2)
+		    delay *= opened / 2;
+//		console.log (delays[dr]);
 		console.log (delay);
 		console.log (ads.length);
 		later (delay, next);
@@ -82,7 +87,11 @@ function sobnikApi ()
 		    if (data.length == 0)
 		    {
 			console.log ("expired");
-			chrome.runtime.sendMessage ("", {type: "open", url: url});
+			processed++;
+			chrome.runtime.sendMessage ("", {type: "open", url: url}, {}, function (reply) {
+			    opened = reply.opened;
+			    console.log ("Opened "+opened);
+			});
 			delayNext ();
 		    }
 		    else

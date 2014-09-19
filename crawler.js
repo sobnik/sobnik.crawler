@@ -11,8 +11,8 @@
     var opened = {};
 
     var urls = [
-	"http://www.avito.ru/moskva/kvartiry?user=1&view=list",
-//	"http://www.avito.ru/moskva/kvartiry/sdam/na_dlitelnyy_srok?user=1&view=list"
+//	"http://www.avito.ru/moskva/kvartiry?user=1&view=list",
+	"http://www.avito.ru/moskva/kvartiry/sdam/na_dlitelnyy_srok?p=4&user=1&view=list"
     ];
 
     var incognito = function (callback) 
@@ -124,8 +124,9 @@
 	if (!tabInfo || !tabInfo.retry)
 	    return;
 
-	// 2-7 minutes
-	var delay = (Math.random () * 5 + 2) * 60000;
+	// 1-2 minutes
+	var delay = (Math.random () * 1 + 1) * 60000;
+//	var delay = (Math.random () * 5 + 2) * 1000;
 	console.log ("Retry after "+delay+" "+tabInfo.url);
 
 	later (delay, function () {
@@ -139,12 +140,20 @@
 	    closeAndRetry (sender.tab.id);
     }
 
-    var open = function (url, settings)
+    var open = function (url, settings, reply)
     {	
 	console.log (url);
 	var retry = settings ? settings.retry : false;
 	var ttl = settings ? settings.TTL : 0;
 	var tabInfo = {url: url, retry: retry, pings: 0, to: null};
+
+	if (reply) 
+	{
+	    var count = 0;
+	    for (var i in opened)
+		count++;
+	    reply ({opened: count});
+	}
 
 	var setTTL = function (tab, ttl) {
 	    if (!ttl || ttl < 0)
@@ -173,9 +182,9 @@
 	});
     }
 
-    var onOpen = function (sender, message, opt) 
+    var onOpen = function (sender, message, opt, reply) 
     {
-	return open (message.url, opt);
+	return open (message.url, opt, reply);
     }
 
     chrome.runtime.onMessage.addListener (function (message, sender, reply) {
